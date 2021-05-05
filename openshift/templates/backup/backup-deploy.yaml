@@ -142,12 +142,12 @@ objects:
                 - name: WALLET_PRIMARY_USER
                   valueFrom:
                     secretKeyRef:
-                      name: ${WALLET_DB_HOST_NAME}${SUFFIX}
+                      name: ${WALLET_DB_HOST}${SUFFIX}
                       key: ${DATABASE_USER_KEY_NAME}
                 - name: WALLET_PRIMARY_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${WALLET_DB_HOST_NAME}${SUFFIX}
+                      name: ${WALLET_DB_HOST}${SUFFIX}
                       key: ${DATABASE_PASSWORD_KEY_NAME}
 
                 - name: WEBHOOK_URL
@@ -230,7 +230,7 @@ parameters:
       this is used to wire up the credentials associated to the database.
     required: true
     value: event-db
-  - name: WALLET_DB_HOST_NAME
+  - name: WALLET_DB_HOST
     displayName: Wallet Database Hostname
     description:
       The name associated to the wallet database deployment resources.  In
