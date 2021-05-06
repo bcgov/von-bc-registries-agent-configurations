@@ -58,7 +58,7 @@ objects:
         description: Defines how to deploy the application server
         app.openshift.io/connects-to: >-
           [{"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"${MARA_DB_HOST}"},
-          {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"${EVENT_PROC_DB_HOST}${SUFFIX}"},
+          {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"${EVENT_PROC_DB_HOST}"},
           {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"${BC_REG_DB_HOST}"},
           {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"${API_HOST}${SUFFIX}"}]
     spec:
