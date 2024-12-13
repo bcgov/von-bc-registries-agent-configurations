@@ -85,8 +85,8 @@ objects:
       selector:
         name: ${NAME}${SUFFIX}
 
-  - kind: DeploymentConfig
-    apiVersion: v1
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       name: ${NAME}${SUFFIX}
       labels:
@@ -96,35 +96,13 @@ objects:
         app-group: ${APP_GROUP}
         role: ${ROLE}
         env: ${TAG_NAME}
-      annotations:
-        description: Defines how to deploy the application server
-        app.openshift.io/connects-to: >-
-          [{"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"${AGENT_HOST}${SUFFIX}"}]
-      annotations:
-        description: Defines how to deploy the container.
     spec:
       strategy:
-        type: Rolling
-        rollingParams:
-          updatePeriodSeconds: 1
-          intervalSeconds: 1
-          timeoutSeconds: 600
-          maxUnavailable: 25%
-          maxSurge: 25%
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}${SUFFIX}
-            from:
-              kind: ImageStreamTag
-              namespace: ${IMAGE_NAMESPACE}
-              name: ${NAME}:${TAG_NAME}
+        type: RollingUpdate
       replicas: 1
       selector:
-        name: ${NAME}${SUFFIX}
+        matchLabels:
+          name: ${NAME}${SUFFIX}
       template:
         metadata:
           name: ${NAME}${SUFFIX}
@@ -138,7 +116,7 @@ objects:
         spec:
           containers:
             - name: ${NAME}${SUFFIX}
-              image:  
+              image: image-registry.openshift-image-registry.svc:5000/${IMAGE_NAMESPACE}/${NAME}:${TAG_NAME}
               ports:
                 - containerPort: ${{HOST_PORT}}
                   protocol: TCP
@@ -205,8 +183,8 @@ objects:
         env: ${TAG_NAME}
     spec:
       scaleTargetRef:
-        apiVersion: apps.openshift.io/v1 
-        kind: DeploymentConfig
+        apiVersion: apps/v1
+        kind: Deployment
         name: ${NAME}${SUFFIX}
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
