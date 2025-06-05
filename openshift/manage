@@ -126,18 +126,26 @@ usage () {
         Runs the './run-step.sh bcreg/bc_reg_pipeline.py' pipeline script
         on an instance of a event-processor pod.
 
+    findUnprocessedEvents
+      - Similar to run runPipeline, but only runs the find unprocessed events step.  So it only queues
+        up records for processing.
+
     processQueuedRecords
       - Similar to run runPipeline, but skips the find unprocessed events step, so only queued
-        records are porcessed.
+        records are processed.
 
     runPipelineLear
       - Run the pipeline for the given environment.
         Runs the './run-step.sh bcreg/bc_reg_pipeline.py' pipeline script
         on an instance of a event-processor pod.
 
+    findUnprocessedEventsLear
+      - Similar to run runPipelineLear, but only runs the find unprocessed events step.  So it only queues
+        up records for processing.
+
     processQueuedRecordsLear
       - Similar to run runPipelineLear, but skips the find unprocessed events step, so only queued
-        records are porcessed.
+        records are processed.
 
     getFailedCredErrors
       - Gets a summary of the errors encounters during credential posting, a summary of the
@@ -743,6 +751,19 @@ function runPipeline() {
     'cd scripts && ./run-step.sh bcreg/bc_reg_pipeline.py'
 }
 
+function findUnprocessedEvents() {
+  _podName=${1}
+  if [ -z "${_podName}" ]; then
+    echoError "\nfindUnprocessedEvents; You MUST specify a pod name.\n"
+    exit 1
+  fi
+
+  echo
+  runInContainer \
+    ${_podName}${resourceSuffix} \
+    'cd scripts && ./run-step.sh bcreg/find-unprocessed-events.py'
+}
+
 function processQueuedRecords() {
   _podName=${1}
   if [ -z "${_podName}" ]; then
@@ -773,6 +794,19 @@ function runPipelineLear() {
   runInContainer \
     ${_podName}${resourceSuffix} \
     'cd scripts && ./run-step.sh bcreg/bc_reg_pipeline_lear.py'
+}
+
+function findUnprocessedEventsLear() {
+  _podName=${1}
+  if [ -z "${_podName}" ]; then
+    echoError "\nfindUnprocessedEventsLear; You MUST specify a pod name.\n"
+    exit 1
+  fi
+
+  echo
+  runInContainer \
+    ${_podName}${resourceSuffix} \
+    'cd scripts && ./run-step.sh bcreg/find-unprocessed-events-lear.py'
 }
 
 function processQueuedRecordsLear() {
@@ -1132,6 +1166,10 @@ case "${_cmd}" in
     eventProcessorPodName=${1:-event-processor}
     runPipeline "${eventProcessorPodName}"
     ;;
+  findunprocessedevents)
+    eventProcessorPodName=${1:-event-processor}
+    findUnprocessedEvents "${eventProcessorPodName}"
+    ;;
   processqueuedrecords)
     eventProcessorPodName=${1:-event-processor}
     processQueuedRecords "${eventProcessorPodName}"
@@ -1139,6 +1177,10 @@ case "${_cmd}" in
   runpipelinelear)
     eventProcessorPodName=${1:-event-processor}
     runPipelineLear "${eventProcessorPodName}"
+    ;;
+  findunprocessedeventslear)
+    eventProcessorPodName=${1:-event-processor}
+    findUnprocessedEventsLear "${eventProcessorPodName}"
     ;;
   processqueuedrecordslear)
     eventProcessorPodName=${1:-event-processor}
